@@ -11,12 +11,12 @@ def generate_token(user_id, role):
         'exp': datetime.utcnow() + timedelta(days=7),
         'iat': datetime.utcnow()
     }
-    secret = current_app.config.get('JWT_SECRET_KEY', 'sih_26044_jwt_key_ayush_2024')
+    secret = current_app.config.get('JWT_SECRET_KEY', 'dev-secret-key-change-in-production')
     token = jwt.encode(payload, secret, algorithm='HS256')
     return token
 
 def decode_token(token):
-    secret = current_app.config.get('JWT_SECRET_KEY', 'sih_26044_jwt_key_ayush_2024')
+    secret = current_app.config.get('JWT_SECRET_KEY', 'dev-secret-key-change-in-production')
     try:
         payload = jwt.decode(token, secret, algorithms=['HS256'])
         return payload

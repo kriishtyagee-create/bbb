@@ -20,8 +20,21 @@ def create_app():
     app = Flask(__name__, static_folder='../frontend/dist', static_url_path='')
     app.config.from_object(Config)
     
-    # Enable CORS
-    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+    # Enable CORS (support FRONTEND_URL or allow all origins for public API)
+    frontend_url = os.getenv('FRONTEND_URL')
+    if frontend_url:
+        origins = [
+            frontend_url.rstrip('/'),
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:5000",
+            "http://127.0.0.1:5000",
+            "http://localhost:5001",
+            "http://127.0.0.1:5001"
+        ]
+        CORS(app, resources={r"/api/*": {"origins": origins}})
+    else:
+        CORS(app, resources={r"/api/*": {"origins": "*"}})
     
     # Initialize DB
     db.init_app(app)
@@ -78,4 +91,9 @@ app = create_app()
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     print(f"🚀 Starting SIH PS 26044 Backend Server on http://127.0.0.1:{port}")
-    app.run(host='0.0.0.0', port=port, debug=True)
+    try:
+        app.run(host='0.0.0.0', port=port, debug=True)
+    except OSError:
+        port = 5001
+        print(f"⚠️ Port was in use, starting fallback on http://127.0.0.1:{port}")
+        app.run(host='0.0.0.0', port=port, debug=True)

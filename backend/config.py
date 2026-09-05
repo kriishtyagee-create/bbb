@@ -4,8 +4,10 @@ from datetime import timedelta
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', 'sih_26044_super_secret_production_ready_jwt_key_ayush_platform_2024_secure')
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'sih_26044_jwt_key_ayush_all_india_institute_of_ayurveda_secure_token_2024')
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-jwt-secret-key-change-in-production')
+
+
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=7)
     
     # SQLite default, easily switchable to PostgreSQL via DATABASE_URL

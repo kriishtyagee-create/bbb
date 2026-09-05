@@ -1,4 +1,6 @@
-const API_BASE = '/api';
+// Use environment variable in production (e.g. on Vercel), fallback to '/api' for local dev proxy
+const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
+
 
 export const apiFetch = async (endpoint, options = {}) => {
   const token = localStorage.getItem('sih_auth_token');

@@ -63,39 +63,75 @@ $$\text{Final Fit} = (\text{Skill Match} \times 50\%) + (\text{Branch Match} \ti
 
 ---
 
-## 🚀 3. Quick Start Guide
+## 🚀 3. How to Run Locally
 
-### Prerequisites
-- Python 3.10+
-- Node.js 18+ (bundled or system-installed)
-
-### 1-Command Unified Startup (Recommended)
-```bash
-./start.sh
-```
-Or with Python:
-```bash
-source backend/venv/bin/activate
-python run.py
-```
-Open **`http://127.0.0.1:5000`** in your browser!
-
-### Running in Separate Development Mode (Optional)
-
-**Backend API (Port 5000):**
+### A. Run Backend (Terminal 1)
 ```bash
 cd backend
-source venv/bin/activate
+pip install -r requirements.txt
 python app.py
 ```
+*(Backend runs on `http://127.0.0.1:5000` or `5001` if port 5000 is occupied).*
 
-**Frontend Vite Server (Port 5173 with proxy to backend):**
+### B. Run Frontend (Terminal 2)
 ```bash
 cd frontend
+npm install
 npm run dev
 ```
+*(Frontend runs on `http://localhost:5173` with automatic `/api` proxy to backend).*
 
 ---
+
+## 🌐 4. Deployment Guide (Vercel + Render / Railway)
+
+### Architecture
+```text
+User (Browser) ──> Vercel (React + Vite SPA) ──[VITE_API_URL]──> Render / Railway (Flask REST API) ──> SQLite / PostgreSQL
+```
+
+### A. Deploy Frontend to Vercel
+1. Push your repository to GitHub.
+2. Log in to [Vercel](https://vercel.com) and click **"Add New Project"** &rarr; **Import** your repository.
+3. Configure the Project Settings:
+   - **Root Directory**: `frontend` *(Click Edit and select the `frontend` folder)*
+   - **Framework Preset**: `Vite`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Add Environment Variable:
+   - **Key**: `VITE_API_URL`
+   - **Value**: `https://your-backend-url.onrender.com/api` *(replace with your actual backend URL)*
+5. Click **Deploy**.
+
+> **Note on Vercel 404 / NOT_FOUND Fix**:  
+> `frontend/vercel.json` is configured with an SPA rewrite rule (`"rewrites": [{"source": "/(.*)", "destination": "/index.html"}]`). This ensures direct links and refreshes on routes like `/student/dashboard` or `/login` will never throw a 404 error on Vercel.
+
+### B. Deploy Backend to Render (or Railway)
+1. In [Render Dashboard](https://dashboard.render.com), click **New +** &rarr; **Web Service**.
+2. Connect your GitHub repository.
+3. Configure the service:
+   - **Root Directory**: `backend`
+   - **Runtime**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+4. In **Environment Variables**, add:
+   - `SECRET_KEY`: `your-random-secret-key`
+   - `JWT_SECRET_KEY`: `your-random-jwt-key`
+   - `FRONTEND_URL`: `https://your-frontend.vercel.app`
+5. Click **Create Web Service**. Once deployed, copy your backend URL (e.g. `https://sih-backend.onrender.com`).
+
+### C. Connect Frontend to Backend
+In your Vercel project settings, set:
+```text
+VITE_API_URL=https://your-backend-url.onrender.com/api
+```
+Redeploy Vercel, and your live frontend will seamlessly communicate with your live backend!
+
+> **Database Note**:  
+> For the SIH presentation/demo, SQLite (`sih_ayush_portal.db`) is used for zero-configuration setup. When transitioning to full cloud production, configure `DATABASE_URL=postgresql://user:password@host:5432/dbname` for persistent cloud storage.
+
+---
+
 
 ## 🎯 4. Step-by-Step SIH Hackathon Demo Walkthrough
 
